@@ -3,9 +3,7 @@ package com.liny.javastream;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,6 +11,7 @@ import java.util.stream.Stream;
  * @author linyi
  * @date 2022/9/1
  * 1.0
+ * 中间操作符，终止操作符
  */
 //@SpringBootTest
 public class JavaStreamTest {
@@ -119,39 +118,126 @@ public class JavaStreamTest {
         Stream<String> stringStream1 = strings.stream().flatMap(x -> Arrays.asList(x.split(" ")).stream());
     }
 
-    //@Test
-    //void () {
-    //
-    //}
+    /**
+     * 返回排序后的流
+     */
+    @Test
+    void sorted() {
+        List<String> strings1 = Arrays.asList("abc", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        List<String> sorted1 = strings1.stream().sorted().collect(Collectors.toList());
+        System.out.println(sorted1); //[aba, abc, abcd, abd, efg, jkl, jkl]
+    }
 
-    //@Test
-    //void () {
-    //
-    //}
 
-    //@Test
-    //void () {
-    //
-    //}
+    /**
+     * 终止操作符
+     */
 
-    //@Test
-    //void () {
-    //
-    //}
+    /**
+     * 检查是否至少匹配一个元素，返回boolean
+     */
+    @Test
+    void anyMatch(){
 
-    //@Test
-    //void () {
-    //
-    //}
+        List<String> strings = Arrays.asList("abc", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        boolean b = strings.stream().anyMatch(s -> s == "abc");
+        System.out.println(b);
+        System.out.println("========================================");
+        boolean e = strings.stream().anyMatch(str -> {
+            System.out.println(1);
+            return str.contains("e");
+        });
+        System.out.println(e);
 
-    //@Test
-    //void () {
-    //
-    //}
+    }
 
-    //@Test
-    //void () {
-    //
-    //}
+    /**
+     * 检查是否匹配所有元素，返回boolean。
+     */
+    @Test
+    void allMatch() {
+        List<String> strings = Arrays.asList("abc", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        boolean b = strings.stream().allMatch(s -> s == "abc");
+    }
+
+    /**
+     *检查是否没有匹配所有元素，返回boolean。
+     */
+    @Test
+    void noneMatch() {
+        List<String> strings = Arrays.asList("abc", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        boolean b = strings.stream().noneMatch(s -> s == "abc");
+    }
+
+    /**
+     * 将返回当前流中的任意元素。
+     */
+    @Test
+    void findAny() {
+        List<String> strings = Arrays.asList("cv", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        for (int i = 0; i < 20; i++) {
+            Optional<String> any = strings.stream().findAny(); //只拿第一个元素
+            System.out.println(any);
+            Optional<String> any01 = strings.parallelStream().findAny(); //并行的  拿任意一个元素
+            System.out.println(any01);
+        }
+
+
+    }
+
+    /**
+     * 返回第一个元素
+     */
+    @Test
+    void findFirst() {
+        List<String> strings = Arrays.asList("cv", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        Optional<String> first = strings.stream().findFirst();
+    }
+
+    /**
+     * 遍历流
+     */
+    @Test
+    void forEach() {
+        List<String> strings = Arrays.asList("cv", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        strings.stream().forEach(s -> System.out.println(s));
+        strings.stream().forEach(System.out::println); //简写，效果一样
+
+    }
+
+    /**
+     * 收集器，将流转换为其他形式。
+     */
+    @Test
+    void collect() {
+        List<String> strings = Arrays.asList("cv", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        Set<String> set = strings.stream().collect(Collectors.toSet()); //去重复
+        System.out.println("set"+set);
+        List<String> list = strings.stream().collect(Collectors.toList());
+        System.out.println("list"+list);
+        Map<String, String> map = strings.stream().collect(Collectors.toMap(k ->k.concat("_name"), v -> v, (v, v1) -> v1));
+        System.out.println("map"+map);
+    }
+
+
+    /**
+     * 可以将流中元素反复结合起来，得到一个值
+     */
+    @Test
+    void reduce() {
+        List<String> strings = Arrays.asList("cv", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        Optional<String> reduce = strings.stream().reduce((acc,item) -> {return acc+item;});
+        if(reduce.isPresent()) System.out.println(reduce.get());
+    }
+
+
+    /**
+     * 返回流中元素总数。
+     */
+    @Test
+    void count() {
+        List<String> strings = Arrays.asList("cv", "abd", "aba", "efg", "abcd","jkl", "jkl");
+        long count = strings.stream().count();
+    }
 
 }
